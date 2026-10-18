@@ -63,7 +63,12 @@ _2 dakikalık akış: menü seçimi → önce/sonra fotoğraf → analiz → son
 - `SENARYO` — panel geçmişi sentetik tohum, saha ölçümü değil
 - `SİMÜLASYON` — etki öngörüsü aralıkla, tek sayı değil
 - _Jüriye: "Sistem satmıyor, ölçüyor. Pilot kararı verinin kendisi verecek."_
-- _Doğrulama: kompozit test çiftinde ort. mutlak hata ≈ 0,08 (model kartı)._
+- _Doğrulama — iki katman: (1) kontrollü kompozit test: 4 yemekte ort. mutlak
+  hata ≈ 0,08. (2) Gerçek saha verisi: UNIMIB/Padova yemekhane tepsileri,
+  24 önce/sonra çifti, ground-truth maskeli → **%91 öğe tespiti, MAE ≈ 0,27**
+  (en iyi çiftte 0,06). Tam kırılım model kartında ve /yontem sayfasında._
+- _Ek cümle: "Belirsiz maskelerde karar, Türkiye'nin ulusal LLM altyapısındaki
+  görsel modele (EVREN) soruluyor — COP31 sahnesinde yerli teknoloji hikayesi."_
 
 ## S8 · Etki ölçümü
 

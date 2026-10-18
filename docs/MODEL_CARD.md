@@ -65,14 +65,13 @@ Ortalama mutlak hata ≈ 0,08 (mekanik doğrulama; saha ölçümü değildir).
 yemek maskeleriyle**. Doğrulama: `api/scripts/validate_real.py`
 (gerçek oran = maskelerden alan oranı; tahmin = ARTIK pipeline çıktısı).
 
-**Sonuçlar** (`demo/real_dataset/val_results.json` — çalıştırıldığında güncellenir):
+**Sonuçlar** (tam koşu, 2026-10-18; `demo/real_dataset/val_results.json`):
 
-- Tespit oranı, eşleşen öğelerde ortalama mutlak hata ve tepsi bazında kırılım
-  script çıktısında raporlanır.
-- Bilinen kırılım noktaları (aşağıda) bu veri setinde gözlemlenmiştir: bitişik
-  tabakların tek SAM maskesinde birleşmesi, çift-çekim arası ışık/açı değişimi,
-  yarım yenmiş tabaklarda 'boş tabak' karışıklığı (VLM arabuluculuğu bunu
-  kısmen azaltır).
+- **Tespit oranı: 90,9%** (99 öğe değerlendirmesinin 90'ı bulundu)
+- **Eşleşen öğelerde ortalama mutlak oran hatası: 0,267**
+- En iyi çift (tray6 L2): 4/4 tespit, MAE 0,056 — web demosu bu çifttir
+- Çiftler arası dağılım geniş (0,056 – 0,58): bitişik tabak birleşmesi ve
+  çift-çekim ışık/açı farkı ana kaynak; ayrıntılı kırılım JSON'da.
 
 Bu, saha/tartım doğrulaması değildir; gerçek fotoğraflarda dayanıklılık ölçümüdür.
 
