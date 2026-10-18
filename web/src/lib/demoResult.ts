@@ -68,6 +68,6 @@ export const DEMO_MENU_KEYS = [
 ];
 
 export const DEMO_OVERLAYS = {
-  before: "/demo/before.png",
-  after: "/demo/after.png",
+  before: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/demo/before.png`,
+  after: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/demo/after.png`,
 };
