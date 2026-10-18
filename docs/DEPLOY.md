@@ -2,60 +2,54 @@
 
 ARTIK'ın iki bileşeni ayrı yerlerde çalışır:
 
-| Bileşen | Platform | Not |
+| Bileşen | Platform | Durum |
 |---|---|---|
-| `web/` (Next.js) | Vercel | Ücretsiz plan yeterli |
-| `api/` (FastAPI + modeller) | Hugging Face Spaces (Docker) | Ücretsiz CPU; analiz ~1–3 dk |
+| `web/` (Next.js) | GitHub Pages (statik export) | **Yayında**: https://mehmetefeaytas.github.io/artik/ |
+| `api/` (FastAPI + modeller) | Yerel laptop (+ Cloudflare tüneli) | Canlı demo sırasında çalışır |
 
-Yerel sunucu (laptop) her zaman en hızlı demo yoludur; deploy edilmiş sürüm
-jüri/ziyaretçi için erişilebilir yedektir. Web, API'ye ulaşamazsa istasyon
-sayfası otomatik olarak demo moduna düşer.
-
-## 1 · API → Hugging Face Space
-
-1. https://huggingface.co/new-space adresinde Space oluştur:
-   - Space name: `artik-api` · SDK: **Docker** · Plan: **Free (CPU)**
-2. Repoyu Space'e gönder (repo kökünden):
+## Canlı demo (tek komut)
 
 ```bash
-git clone https://huggingface.co/spaces/<kullanici-adi>/artik-api spaces-artik
-cd spaces-artik
-# Space Docker'ı kök dizindeki Dockerfile'ı arar — api/Dockerfile'ı köke kopyala
-cp <artik-repo>/api/Dockerfile .
-# api/ ve data/ klasörlerini de kopyala (Dockerfile bunları bekler)
-cp -r <artik-repo>/api <artik-repo>/data .
-git add -A && git commit -m "ARTIK API deploy" && git push
+./demo/live_demo.sh          # API + tünel + yayınlanmış siteyi canlı moda geçir
+./demo/live_demo.sh --local  # Sadece yerel API + web (ağ bağımlılığı yok)
+./demo/live_demo.sh --down   # Tüneli kapat
 ```
 
-3. Build ~10 dk sürer (modeller imgeye gömülür). Sağlık kontrolü:
-   `https://<kullanici-adi>-artik-api.hf.space/health`
+`live_demo.sh` ne yapar:
+1. API'yi yerelde başlatır (`:8000`)
+2. Cloudflare hızlı tüneli açar (her çalıştırmada yeni URL)
+3. Yayınlanmış siteyi `NEXT_PUBLIC_API_URL=<tünel>` ile yeniden oluşturup
+   gh-pages dalına iter → **GitHub Pages'teki site canlı API'ye bağlanır**
+4. Yerel web'i de (`:3000`) başlatır
 
-Notlar:
-- `ARTIK_SAM_POINTS=16` (imge içinde) — CPU'da hız/doğruluk dengesi.
-- SQLite (`api/artik.db`) Space yeniden başladığında sıfırlanır; demo için kabul
-  edilir, kalıcılık için HF persistent storage veya harici DB gerekir.
+Tünel kapalıyken site otomatik **demo moduna** düşer (ön-hesaplanmış sonuç);
+bu bilinçli bir tasarım kararıdır — yayınlanan bağlantı asla kırılmaz.
 
-## 2 · Web → Vercel
+> Not (Ekim 2026): Hugging Face dinamik (Docker/Gradio) Space'ler ücretsiz
+> hesapta PRO gerektiriyor; bu yüzden API yerel + tünel modeliyle yayında.
+> Alternatifler (HF PRO, Cloud Run) `api/Dockerfile` hazır olduğu için
+> dakikalar içinde devreye alınabilir.
 
-1. https://vercel.com/new → GitHub'daki `mehmetefeaytas/artik` reposunu içe aktar
-2. Ayarlar:
-   - Root Directory: `web`
-   - Environment Variables → `NEXT_PUBLIC_API_URL` =
-     `https://<kullanici-adi>-artik-api.hf.space`
-3. Deploy
-
-Alternatif (CLI): `cd web && vercel --prod` (önce `vercel login`)
-
-## 3 · Yerel demo (en hızlı)
+## Manuel statik yayını
 
 ```bash
-# Terminal 1 — API
-cd api && uv sync && uv run uvicorn app.main:app --port 8000
+cd web
+STATIC_EXPORT=1 NEXT_PUBLIC_BASE_PATH=/artik npm run build
+# out/ içeriğini gh-pages dalına it (.nojekyll ile)
+```
 
-# Terminal 2 — Web
+## Yerel geliştirme
+
+```bash
+# API (port 8000)
+cd api && uv sync && uv run uvicorn app.main:app --reload
+
+# Web (port 3000)
 cd web && npm install && npm run dev
-# http://localhost:3000
 ```
+
+İlk API çalıştırması SAM checkpoint'ini (~375 MB) ve CLIP'i indirir.
+Analiz yerel Mac'te ~30–70 sn sürer (2 görüntü); tünel üzerinden ~75 sn.
 
 ## Doğrulama kontrol listesi
 
@@ -64,3 +58,4 @@ cd web && npm install && npm run dev
 - [ ] Panel: senaryo grafikleri + öneriler doluyor
 - [ ] API kapalıyken istasyon demo moduna düşüyor
 - [ ] TR/EN geçişi çalışıyor
+- [ ] Yayınlanmış site: tünel açıkken menü listesi doluyor
