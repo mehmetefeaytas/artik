@@ -1,0 +1,392 @@
+"use client";
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+
+export type Lang = "tr" | "en";
+
+const dict = {
+  tr: {
+    nav: {
+      station: "İstasyon",
+      panel: "Panel",
+      feedback: "Geri Bildirim",
+      method: "Yöntem",
+    },
+    common: {
+      scenario: "Senaryo",
+      estimate: "Tahmin",
+      simulation: "Simülasyon",
+      real: "Gerçek kayıt",
+      loading: "Yükleniyor…",
+      error: "Bir şey ters gitti",
+      retry: "Yeniden dene",
+      total: "Toplam",
+      g: "g",
+      kg: "kg",
+      day: "gün",
+      portion: "porsiyon",
+      source: "kaynak",
+    },
+    landing: {
+      eyebrow: "Toplu yemekhaneler için tabak artığı ölçüm istasyonu",
+      title1: "Tabakta ne kalıyorsa,",
+      title2: "bütçeden o gidiyor.",
+      sub: "ARTIK, yemekhane iade hattında servis öncesi ve sonrası tepsi fotoğraflarını görüntü işlemeyle karşılaştırır; yemek bazında yenilebilir artığı tahmin eder, öğrenci geri bildirimini ekler ve porsiyon kararlarını veriye dayandırır.",
+      ctaStation: "İstasyonu dene",
+      ctaPanel: "Paneli gör",
+      statsTitle: "Neden şimdi?",
+      s1: "öğrenci tabakta artık bıraktığını bildiriyor",
+      s1note: "Gümüşhane Üniv. yemekhane araştırması, 2023 (n=330)",
+      s2: "ton gıda atığı — yalnız gıda hizmetleri sektörü, 2022",
+      s2note: "UNEP Food Waste Index 2024",
+      s3: "BM Sürdürülebilir Kalkınma Hedefi 12.3",
+      s3note: "2030'a kadar per capita gıda israfını yarıya indirmek",
+      howTitle: "Nasıl çalışır?",
+      how1t: "Servis fotoğrafı",
+      how1d: "Tepsi, servis hattında ya da masaya otururken yukarıdan çekilir. Günün menüsü istasyonda seçilidir.",
+      how2t: "İade fotoğrafı",
+      how2d: "Tepsi, iade bandında aynı açıdan ikinci kez çekilir. İki kare arasındaki fark ölçülebilir hale gelir.",
+      how3t: "Karar",
+      how3d: "SAM+CLIP görüntü işleme yemek bazında artık oranını tahmin eder; panel menü ve porsiyon önerisi üretir.",
+      honestTitle: "Bu prototipte ne gerçek, ne değil?",
+      h1t: "Görüntü işleme gerçek",
+      h1d: "Analizler canlı çalışır: SAM segmentasyonu + CLIP sınıflandırması, eğitimsiz (zero-shot), her menüye uyarlanır.",
+      h2t: "Gram değerleri tahmin",
+      h2d: "Görüntüden alan oranıyla hesaplanır; tartım doğrulaması olmadan ölçüm sayılmaz. Arayüzde her yerde TAHMİN damgası taşır.",
+      h3t: "Panel geçmişi senaryo",
+      h3d: "8 haftalık geçmiş, tohumlanmış sentetik veridir — gerçek yemekhane ölçümü değildir. Gerçek kayıtlar ayrı bölümde gösterilir.",
+      alignment: "COP31: Atığı 2035'e kadar yarıya indirmek · Siemens Etki Alanı: Kaynak Verimliliği ve Döngüsellik · SDG 12.3",
+    },
+    station: {
+      title: "Tepsi İstasyonu",
+      sub: "Günün menüsünü seç, önce/sonra fotoğraflarını yükle ya da kamerayla çek, analizi çalıştır.",
+      step1: "1 · Günün menüsü",
+      step1hint: "Analiz edilecek yemekleri seç (en fazla 6). İngilizce açıklamalar CLIP sınıflandırmasını besler.",
+      quickDemo: "Hızlı demo menüsü",
+      step2: "2 · Fotoğraflar",
+      before: "Önce — servis",
+      after: "Sonra — iade",
+      upload: "Fotoğraf yükle",
+      camera: "Kamerayla çek",
+      useDemoPair: "Demo çiftini kullan",
+      cameraHint: "Tepsiyi yukarıdan, tam kadrajda tut",
+      capture: "Çek",
+      close: "Kapat",
+      step3: "3 · Analiz",
+      analyze: "Analizi çalıştır",
+      analyzing: "Analiz ediliyor…",
+      analyzingHint: "SAM segmentasyonu + CLIP sınıflandırması çalışıyor; yerel sunucuda ~30–60 saniye sürebilir.",
+      saveLabel: "Sonucu panel için kaydet",
+      resultTitle: "Sonuç",
+      eaten: "yenildi",
+      left: "kaldı",
+      estLeftover: "tahmini artık",
+      confidence: "güven",
+      warnings: "Uyarılar",
+      noItems: "Hiçbir yemek eşleşmedi. Menü seçimini ve fotoğraf açısını kontrol et.",
+      apiDown: "Analiz sunucusuna ulaşılamıyor. Demo modu: önceden hesaplanmış örnek sonuç gösteriliyor.",
+      fresh: "Yeni analiz",
+      portionDefault: "standart porsiyon",
+    },
+    panel: {
+      title: "Yemekhane Paneli",
+      sub: "Yemek bazında tabak artığı, nedenler ve porsiyon önerileri.",
+      totalLeftover: "Toplam yenilebilir artık",
+      gPerMeal: "Öğün başına artık",
+      avgPct: "Ortalama artık oranı",
+      co2: "CO₂e eşdeğeri",
+      water: "Su ayak izi",
+      cost: "Malzeme maliyeti",
+      mealsServed: "servis edilen öğün",
+      trendTitle: "Günlük seri — öğün başına gram",
+      trendNote: "SENARYO verisi: saha ölçümü değil, üretilebilir tohumdan.",
+      rankTitle: "En çok artık bırakılan yemekler",
+      rankHint: "son 56 gün · senaryo verisi",
+      reasonsTitle: "Neden bırakıldı?",
+      reasonsHint: "QR geri bildirim dağılımı · senaryo",
+      recsTitle: "Öneriler",
+      recPortion: "Porsiyon",
+      recWatch: "İzlemede",
+      recKitchen: "Mutfak",
+      recHigh: "Yüksek öncelik",
+      recMedium: "Orta öncelik",
+      simOldNew: "porsiyon değişimi",
+      simSaved: "tasarruf tahmini",
+      simDays: "gün ufukta",
+      simNote: "Model: muhafazakâr (neden kodu payıyla) → iyimser (tam porsiyon etkisi). Pilot doğrulaması gerekir.",
+      realTitle: "Gerçek istasyon kayıtları",
+      realEmpty: "Henüz kayıt yok. İstasyondan bir analiz yapıp kaydet.",
+      realNote: "Görüntüden tahmin edilen tekil tepsi kayıtları; tartım doğrulaması yok.",
+      trays: "analiz edilen tepsi",
+      topReason: "başlıca neden",
+      trend: { up: "yükseliyor", down: "düşüyor", flat: "durağan" },
+    },
+    feedback: {
+      title: "Tabakta ne kaldı, neden?",
+      sub: "Bir dokunuşla mutfak ekibine söyle — menü ve porsiyon kararları bu veriyle güncellenir.",
+      pickItem: "Hangi yemek? (isteğe bağlı)",
+      skip: "Atla",
+      send: "Gönder",
+      thanks: "Kaydedildi. Teşekkürler!",
+      another: "Başka geri bildirim gönder",
+      reasons: {
+        porsiyon_buyuk: "Porsiyon büyüktü",
+        tadi: "Tadını beğenmedim",
+        sicaklik: "Soğuk servis edildi",
+        cesit_tekrar: "Sık tekrarlanıyor",
+        acele: "Vaktim yoktu",
+        diger: "Diğer",
+      },
+    },
+    method: {
+      title: "Yöntem ve Dürüstlük Beyanı",
+      sub: "Bu sayfa, prototipin neyi ölçtüğünü, neyi varsaydığını ve nerede hata yapabileceğini açıkça listeler.",
+      mTitle: "Ölçülen ve tahmin edilen",
+      m1t: "Segmentasyon ve etiketleme",
+      m1d: "SAM (ViT-B) tepsideki nesneleri maskeler; CLIP (ViT-B/32) maskeleri günün menü etiketleriyle sıfır-atış (zero-shot) eşler. Eğitim yok; menü istasyondan geçer, bu yüzden her yemekhane menüsüne uyarlanır.",
+      m2t: "Artık oranı",
+      m2d: "Öğe başına: sonra görüntüsündeki maske alanı / önce görüntüsündeki maske alanı. Aynı kamera açısı ve benzer tepsi düzeni varsayılır.",
+      m3t: "Gram tahmini",
+      m3d: "Artık oranı × standart porsiyon gramı. Kesin kütle değildir; tartım veya kalibrasyon gerektirir.",
+      m4t: "Etki dönüşümleri",
+      m4d: "kg atık → CO₂e (2,5 kgCO₂e/kg, UNEP FWI 2024 bileşik katsayısı), su (≈1500 L/kg, Mekonnen & Hoekstra 2011 yaklaşımı), maliyet (95 TL/kg varsayımı). Kurum bazında kalibre edilmelidir.",
+      vTitle: "Doğrulama",
+      v1: "Sahnelenmiş (kompozit) test çifti: 4 yemekte artık oranı ortalama mutlak hatası ≈ 0,08; kuru fasulye %62 gerçek orana karşı %61 tahmin.",
+      v2: "Karışık salatalar ve çok küçük artıklar segmentasyonda parçalanabilir; oran düşük kalabilir (muhafazakâr yön).",
+      v3: "Gerçek saha doğrulaması yapılmadı; literatür desteği: UNIMIB2016 (Ciocca ve diğ., IEEE JBHI 2017), FLIC (MDPI Applied Sciences, 2026).",
+      sTitle: "Veri şeması",
+      s1: "Senaryo ölçümleri: tarih, öğün, site, yemek anahtarı, porsiyon_g, servis edilen öğün, artık oranı, yenilebilir artık g, neden kodu.",
+      s2: "Gerçek vizyon kayıtları: aynı alanlar + kaynak=vision_estimate; tartım doğrulaması geldiğinde measurement_method=tartim olarak ayrılır.",
+      s3: "Geri bildirim: tarih, öğün, yemek (opsiyonel), neden kodu.",
+      lTitle: "Lisanslar ve kaynaklar",
+      l1: "Kod: MIT. Modeller: SAM (Meta, MIT) ve CLIP (OpenAI, MIT) — HF transformers üzerinden.",
+      l2: "İstatistik çerçevesi: UNEP Food Waste Index 2024. Türkiye alan çalışmaları: Gümüşhane Üniv. 2023; ODTÜ 2026.",
+      l3: "Demo fotoğrafları: Wikimedia Commons (CC BY-SA), sahneleme kullanıcıya ait.",
+    },
+    footer: {
+      tagline: "Tabak artığını görünür kılan açık kaynak prototip.",
+      built: "Climathon 2026 · Siemens × YGA × UP School için geliştirildi",
+      license: "Kod MIT · Veri setleri kaynak gösterilerek kullanıldı",
+    },
+  },
+  en: {
+    nav: {
+      station: "Station",
+      panel: "Dashboard",
+      feedback: "Feedback",
+      method: "Method",
+    },
+    common: {
+      scenario: "Scenario",
+      estimate: "Estimate",
+      simulation: "Simulation",
+      real: "Real record",
+      loading: "Loading…",
+      error: "Something went wrong",
+      retry: "Try again",
+      total: "Total",
+      g: "g",
+      kg: "kg",
+      day: "days",
+      portion: "portion",
+      source: "source",
+    },
+    landing: {
+      eyebrow: "Plate-waste measurement station for institutional canteens",
+      title1: "What stays on the plate",
+      title2: "leaves with the budget.",
+      sub: "ARTIK compares before/after tray photos at the tray-return line with computer vision, estimates edible leftovers per dish, adds student feedback, and grounds portion decisions in data.",
+      ctaStation: "Try the station",
+      ctaPanel: "View dashboard",
+      statsTitle: "Why now?",
+      s1: "of students report leaving food on the plate",
+      s1note: "Gümüşhane University canteen study, 2023 (n=330)",
+      s2: "tonnes of food waste — food service sector alone, 2022",
+      s2note: "UNEP Food Waste Index 2024",
+      s3: "UN SDG target 12.3",
+      s3note: "Halve per-capita food waste by 2030",
+      howTitle: "How it works",
+      how1t: "Serving photo",
+      how1d: "The tray is photographed top-down at the serving line. Today's menu is selected at the station.",
+      how2t: "Return photo",
+      how2d: "The tray is photographed again at the return line, same angle. The difference becomes measurable.",
+      how3t: "Decision",
+      how3d: "SAM+CLIP vision estimates per-dish leftover ratio; the dashboard turns it into menu and portion decisions.",
+      honestTitle: "What's real in this prototype?",
+      h1t: "The vision is real",
+      h1d: "Analysis runs live: SAM segmentation + CLIP classification, zero-shot, adapts to any menu.",
+      h2t: "Grams are estimates",
+      h2d: "Computed from image area ratios; not measurements without weighing. Every number carries an ESTIMATE stamp.",
+      h3t: "Dashboard history is scenario",
+      h3d: "The 8-week history is seeded synthetic data — not field measurements. Real records appear in a separate section.",
+      alignment: "COP31: Cutting waste in half · Siemens Impact Area: Resource Efficiency & Circularity · SDG 12.3",
+    },
+    station: {
+      title: "Tray Station",
+      sub: "Pick today's menu, load before/after photos or capture with the camera, run the analysis.",
+      step1: "1 · Today's menu",
+      step1hint: "Select dishes to analyze (max 6). English descriptions feed the CLIP classifier.",
+      quickDemo: "Quick demo menu",
+      step2: "2 · Photos",
+      before: "Before — serving",
+      after: "After — return",
+      upload: "Upload photo",
+      camera: "Use camera",
+      useDemoPair: "Use demo pair",
+      cameraHint: "Hold the tray top-down, fully framed",
+      capture: "Capture",
+      close: "Close",
+      step3: "3 · Analysis",
+      analyze: "Run analysis",
+      analyzing: "Analyzing…",
+      analyzingHint: "SAM segmentation + CLIP classification; may take ~30–60 s on the local server.",
+      saveLabel: "Save result for the dashboard",
+      resultTitle: "Result",
+      eaten: "eaten",
+      left: "left",
+      estLeftover: "estimated leftover",
+      confidence: "confidence",
+      warnings: "Warnings",
+      noItems: "No dish matched. Check menu selection and photo angle.",
+      apiDown: "Analysis server unreachable. Demo mode: showing a precomputed sample result.",
+      fresh: "New analysis",
+      portionDefault: "standard portion",
+    },
+    panel: {
+      title: "Canteen Dashboard",
+      sub: "Per-dish plate waste, reasons, and portion recommendations.",
+      totalLeftover: "Total edible leftovers",
+      gPerMeal: "Leftover per meal",
+      avgPct: "Average leftover rate",
+      co2: "CO₂e equivalent",
+      water: "Water footprint",
+      cost: "Ingredient cost",
+      mealsServed: "meals served",
+      trendTitle: "Daily series — grams per meal",
+      trendNote: "SCENARIO data: not field measurements; reproducible seed.",
+      rankTitle: "Most-wasted dishes",
+      rankHint: "last 56 days · scenario data",
+      reasonsTitle: "Why was it left?",
+      reasonsHint: "QR feedback distribution · scenario",
+      recsTitle: "Recommendations",
+      recPortion: "Portion",
+      recWatch: "Watch",
+      recKitchen: "Kitchen",
+      recHigh: "High priority",
+      recMedium: "Medium priority",
+      simOldNew: "portion change",
+      simSaved: "savings estimate",
+      simDays: "day horizon",
+      simNote: "Model: conservative (reason-code share) → optimistic (full portion effect). Needs pilot validation.",
+      realTitle: "Real station records",
+      realEmpty: "No records yet. Run an analysis at the station and save it.",
+      realNote: "Per-tray vision estimates; no weighing validation.",
+      trays: "trays analyzed",
+      topReason: "top reason",
+      trend: { up: "rising", down: "falling", flat: "steady" },
+    },
+    feedback: {
+      title: "What's left on the plate, and why?",
+      sub: "Tell the kitchen team in one tap — menu and portion decisions update with this data.",
+      pickItem: "Which dish? (optional)",
+      skip: "Skip",
+      send: "Send",
+      thanks: "Saved. Thank you!",
+      another: "Send another",
+      reasons: {
+        porsiyon_buyuk: "Portion was too big",
+        tadi: "Didn't like the taste",
+        sicaklik: "Served cold",
+        cesit_tekrar: "Too repetitive",
+        acele: "Was in a hurry",
+        diger: "Other",
+      },
+    },
+    method: {
+      title: "Method & Honesty Statement",
+      sub: "This page lists openly what the prototype measures, what it assumes, and where it can fail.",
+      mTitle: "Measured vs. estimated",
+      m1t: "Segmentation and labeling",
+      m1d: "SAM (ViT-B) masks objects on the tray; CLIP (ViT-B/32) zero-shot matches masks to today's menu labels. No training; menus are passed per request, so it adapts to any canteen.",
+      m2t: "Leftover ratio",
+      m2d: "Per item: mask area in the after image / mask area in the before image. Assumes a fixed camera angle and similar tray layout.",
+      m3t: "Gram estimation",
+      m3d: "Leftover ratio × standard portion grams. Not exact mass; requires weighing or calibration.",
+      m4t: "Impact conversions",
+      m4d: "kg waste → CO₂e (2.5 kgCO₂e/kg, UNEP FWI 2024 composite), water (≈1500 L/kg, Mekonnen & Hoekstra 2011 approximation), cost (95 TL/kg assumption). Calibrate per institution.",
+      vTitle: "Validation",
+      v1: "Staged (composite) test pair: mean absolute error ≈ 0.08 across 4 dishes; white beans 61% predicted vs 62% ground truth.",
+      v2: "Mixed salads and tiny leftovers can fragment in segmentation; ratio may read low (conservative direction).",
+      v3: "No field validation yet; literature support: UNIMIB2016 (Ciocca et al., IEEE JBHI 2017), FLIC (MDPI Applied Sciences, 2026).",
+      sTitle: "Data schema",
+      s1: "Scenario measurements: date, meal, site, item key, portion_g, meals served, leftover ratio, edible leftover g, reason code.",
+      s2: "Real vision records: same fields + source=vision_estimate; split as measurement_method=weighing once scales are added.",
+      s3: "Feedback: date, meal, item (optional), reason code.",
+      lTitle: "Licenses and sources",
+      l1: "Code: MIT. Models: SAM (Meta, MIT) and CLIP (OpenAI, MIT) — via HF transformers.",
+      l2: "Statistics: UNEP Food Waste Index 2024. Turkish field studies: Gümüşhane Univ. 2023; METU 2026.",
+      l3: "Demo photos: Wikimedia Commons (CC BY-SA); staged shots by the author.",
+    },
+    footer: {
+      tagline: "Open-source prototype that makes plate waste visible.",
+      built: "Built for Climathon 2026 · Siemens × YGA × UP School",
+      license: "Code MIT · Datasets used with attribution",
+    },
+  },
+} as const;
+
+export type Dict = (typeof dict)["tr"];
+
+const LangContext = createContext<{
+  lang: Lang;
+  t: Dict;
+  setLang: (l: Lang) => void;
+}>({ lang: "tr", t: dict.tr, setLang: () => {} });
+
+const LANG_EVENT = "artik-lang-change";
+
+function subscribeLang(cb: () => void) {
+  window.addEventListener(LANG_EVENT, cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener(LANG_EVENT, cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+
+function getLangSnapshot(): Lang {
+  const saved = window.localStorage.getItem("artik-lang");
+  return saved === "en" ? "en" : "tr";
+}
+
+function getServerLangSnapshot(): Lang {
+  return "tr";
+}
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const lang = useSyncExternalStore(subscribeLang, getLangSnapshot, getServerLangSnapshot);
+
+  const setLang = useCallback((l: Lang) => {
+    window.localStorage.setItem("artik-lang", l);
+    document.documentElement.lang = l;
+    window.dispatchEvent(new Event(LANG_EVENT));
+  }, []);
+
+  const value = useMemo(
+    () => ({ lang, t: dict[lang] as Dict, setLang }),
+    [lang, setLang]
+  );
+
+  return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
+}
+
+export function useT() {
+  return useContext(LangContext);
+}
