@@ -1,0 +1,233 @@
+{
+ "meta": {
+  "kind": "scenario",
+  "seed": 42,
+  "site": "pilot-universite"
+ },
+ "items": [
+  {
+   "key": "mercimek_corbasi",
+   "name_tr": "Mercimek Çorbası",
+   "name_en": "red lentil soup",
+   "category": "corba",
+   "portion_g": 250,
+   "base_waste": 0.05
+  },
+  {
+   "key": "ezogelin_corbasi",
+   "name_tr": "Ezogelin Çorbası",
+   "name_en": "ezogelin soup",
+   "category": "corba",
+   "portion_g": 250,
+   "base_waste": 0.06
+  },
+  {
+   "key": "tarhana_corbasi",
+   "name_tr": "Tarhana Çorbası",
+   "name_en": "tarhana soup",
+   "category": "corba",
+   "portion_g": 250,
+   "base_waste": 0.07
+  },
+  {
+   "key": "domates_corbasi",
+   "name_tr": "Domates Çorbası",
+   "name_en": "tomato soup",
+   "category": "corba",
+   "portion_g": 250,
+   "base_waste": 0.05
+  },
+  {
+   "key": "kuru_fasulye",
+   "name_tr": "Kuru Fasulye",
+   "name_en": "white bean stew",
+   "category": "ana",
+   "portion_g": 280,
+   "base_waste": 0.22
+  },
+  {
+   "key": "nohut",
+   "name_tr": "Nohut Yemeği",
+   "name_en": "chickpea stew",
+   "category": "ana",
+   "portion_g": 280,
+   "base_waste": 0.2
+  },
+  {
+   "key": "tavuk_sote",
+   "name_tr": "Tavuk Sote",
+   "name_en": "chicken sauté",
+   "category": "ana",
+   "portion_g": 260,
+   "base_waste": 0.12
+  },
+  {
+   "key": "kofte",
+   "name_tr": "Köfte",
+   "name_en": "meatballs",
+   "category": "ana",
+   "portion_g": 260,
+   "base_waste": 0.08
+  },
+  {
+   "key": "karniyarik",
+   "name_tr": "Karnıyarık",
+   "name_en": "stuffed eggplant",
+   "category": "ana",
+   "portion_g": 280,
+   "base_waste": 0.15
+  },
+  {
+   "key": "etli_tencere",
+   "name_tr": "Etli Tencere Yemeği",
+   "name_en": "beef casserole",
+   "category": "ana",
+   "portion_g": 280,
+   "base_waste": 0.17
+  },
+  {
+   "key": "mucver",
+   "name_tr": "Mücver",
+   "name_en": "zucchini fritters",
+   "category": "ana",
+   "portion_g": 260,
+   "base_waste": 0.28
+  },
+  {
+   "key": "ispanak",
+   "name_tr": "Ispanak Yemeği",
+   "name_en": "spinach stew",
+   "category": "ana",
+   "portion_g": 260,
+   "base_waste": 0.26
+  },
+  {
+   "key": "sebze_guvec",
+   "name_tr": "Sebze Güveç",
+   "name_en": "vegetable guvec",
+   "category": "ana",
+   "portion_g": 280,
+   "base_waste": 0.19
+  },
+  {
+   "key": "tavuk_pirzola",
+   "name_tr": "Tavuk Pirzola",
+   "name_en": "chicken cutlet",
+   "category": "ana",
+   "portion_g": 250,
+   "base_waste": 0.1
+  },
+  {
+   "key": "balik_izgara",
+   "name_tr": "Izgara Balık",
+   "name_en": "grilled fish",
+   "category": "ana",
+   "portion_g": 250,
+   "base_waste": 0.24
+  },
+  {
+   "key": "mantar_sote",
+   "name_tr": "Mantar Sote",
+   "name_en": "mushroom sauté",
+   "category": "ana",
+   "portion_g": 250,
+   "base_waste": 0.18
+  },
+  {
+   "key": "pirinc_pilavi",
+   "name_tr": "Pirinç Pilavı",
+   "name_en": "rice pilaf",
+   "category": "garnitur",
+   "portion_g": 180,
+   "base_waste": 0.1
+  },
+  {
+   "key": "bulgur_pilavi",
+   "name_tr": "Bulgur Pilavı",
+   "name_en": "bulgur pilaf",
+   "category": "garnitur",
+   "portion_g": 180,
+   "base_waste": 0.14
+  },
+  {
+   "key": "makarna",
+   "name_tr": "Makarna",
+   "name_en": "pasta",
+   "category": "garnitur",
+   "portion_g": 180,
+   "base_waste": 0.09
+  },
+  {
+   "key": "patates_kizartma",
+   "name_tr": "Patates Kızartma",
+   "name_en": "french fries",
+   "category": "garnitur",
+   "portion_g": 180,
+   "base_waste": 0.06
+  },
+  {
+   "key": "sehriye_pilavi",
+   "name_tr": "Şehriye Pilavı",
+   "name_en": "orzo pilaf",
+   "category": "garnitur",
+   "portion_g": 180,
+   "base_waste": 0.12
+  },
+  {
+   "key": "coban_salata",
+   "name_tr": "Çoban Salata",
+   "name_en": "shepherd's salad",
+   "category": "yan",
+   "portion_g": 150,
+   "base_waste": 0.18
+  },
+  {
+   "key": "yogurt",
+   "name_tr": "Yoğurt",
+   "name_en": "yogurt",
+   "category": "yan",
+   "portion_g": 150,
+   "base_waste": 0.07
+  },
+  {
+   "key": "cacik",
+   "name_tr": "Cacık",
+   "name_en": "cacik (yogurt dip)",
+   "category": "yan",
+   "portion_g": 150,
+   "base_waste": 0.09
+  },
+  {
+   "key": "tursu",
+   "name_tr": "Turşu",
+   "name_en": "pickles",
+   "category": "yan",
+   "portion_g": 120,
+   "base_waste": 0.12
+  },
+  {
+   "key": "mevsim_salata",
+   "name_tr": "Mevsim Salata",
+   "name_en": "seasonal salad",
+   "category": "yan",
+   "portion_g": 150,
+   "base_waste": 0.16
+  },
+  {
+   "key": "sup",
+   "name_tr": "Sütlaç",
+   "name_en": "rice pudding",
+   "category": "tatli",
+   "portion_g": 120,
+   "base_waste": 0.11
+  },
+  {
+   "key": "komposto",
+   "name_tr": "Komposto",
+   "name_en": "compote",
+   "category": "tatli",
+   "portion_g": 120,
+   "base_waste": 0.13
+  }
+ ]
+}

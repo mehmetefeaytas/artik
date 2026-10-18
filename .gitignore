@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.vercel/
+
+# Models & data artifacts
+api/checkpoints/
+*.pth
+*.onnx
+api/*.db
+api/artik.db
+data/real/*.csv
+!data/real/template.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Local env
+.env
+.env.local
+
+# Generated overlays & test outputs
+demo/**/overlay_*
+demo/**/annotated_*
+/tmp/

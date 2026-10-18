@@ -1,0 +1,30 @@
+[project]
+name = "artik-api"
+version = "0.1.0"
+description = "ARTIK — zero-shot canteen tray leftover estimation API (SAM + CLIP)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "python-multipart>=0.0.12",
+    "pillow>=11.0",
+    "numpy>=2.1",
+    "torch>=2.5",
+    "transformers>=4.46",
+    "segment-anything @ git+https://github.com/facebookresearch/segment-anything.git",
+    "torchvision>=0.20",
+    "opencv-python-headless>=4.10",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8",
+    "pytest>=8.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP"]

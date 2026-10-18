@@ -1,0 +1,9 @@
+{
+ "note": "After tabağındaki yemek alanı = keep_ratio x before alanı (sahnelenmiş).",
+ "keep_ratios": {
+  "mercimek_corbasi": 0.05,
+  "kuru_fasulye": 0.62,
+  "pirinc_pilavi": 0.15,
+  "coban_salata": 0.85
+ }
+}

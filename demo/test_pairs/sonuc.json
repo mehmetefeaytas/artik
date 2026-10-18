@@ -1,0 +1,58 @@
+{
+ "items": [
+  {
+   "key": "mercimek_corbasi",
+   "name_tr": "Mercimek Çorbası",
+   "name_en": "red lentil soup",
+   "before_area_frac": 0.08427,
+   "after_area_frac": 0.0,
+   "leftover_ratio": 0.0,
+   "leftover_pct": 0,
+   "estimated_leftover_g": 0.0,
+   "portion_g": 250,
+   "clip_confidence": 0.996
+  },
+  {
+   "key": "kuru_fasulye",
+   "name_tr": "Kuru Fasulye",
+   "name_en": "white bean stew",
+   "before_area_frac": 0.05774,
+   "after_area_frac": 0.036,
+   "leftover_ratio": 0.623,
+   "leftover_pct": 62,
+   "estimated_leftover_g": 174.6,
+   "portion_g": 280,
+   "clip_confidence": 0.989
+  },
+  {
+   "key": "pirinc_pilavi",
+   "name_tr": "Pirinç Pilavı",
+   "name_en": "rice pilaf",
+   "before_area_frac": 0.07854,
+   "after_area_frac": 0.00895,
+   "leftover_ratio": 0.114,
+   "leftover_pct": 11,
+   "estimated_leftover_g": 20.5,
+   "portion_g": 180,
+   "clip_confidence": 0.996
+  },
+  {
+   "key": "coban_salata",
+   "name_tr": "Çoban Salata",
+   "name_en": "shepherd's salad",
+   "before_area_frac": 0.07774,
+   "after_area_frac": 0.04904,
+   "leftover_ratio": 0.631,
+   "leftover_pct": 63,
+   "estimated_leftover_g": 94.6,
+   "portion_g": 150,
+   "clip_confidence": 0.969
+  }
+ ],
+ "matched_items": 4,
+ "total_estimated_leftover_g": 289.7,
+ "warnings": [],
+ "note": "Görüntüden alan oranıyla tahmin; tartım doğrulaması gerekir.",
+ "latency_s": 45.5,
+ "device": "mps"
+}
