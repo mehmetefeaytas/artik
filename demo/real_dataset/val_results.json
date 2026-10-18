@@ -1,0 +1,57 @@
+{
+ "summary": {
+  "pairs": 1,
+  "item_evaluations": 4,
+  "detection_rate": 1.0,
+  "matched_evaluations": 4,
+  "mae_ratio": 0.056,
+  "source": "UNIMIB/Padova gerçek yemekhane tepsileri (demo/real_dataset)",
+  "gt_method": "piksel maskelerinden alan oranı"
+ },
+ "records": [
+  {
+   "tray": 6,
+   "state": 2,
+   "food_id": 4,
+   "name_tr": "Midye İstiridyeli Makarna",
+   "gt_ratio": 0.617,
+   "pred_ratio": 0.714,
+   "abs_err": 0.097,
+   "detected": true,
+   "clip_confidence": 0.8
+  },
+  {
+   "tray": 6,
+   "state": 2,
+   "food_id": 6,
+   "name_tr": "Izgara Pirzola",
+   "gt_ratio": 0.235,
+   "pred_ratio": 0.243,
+   "abs_err": 0.008,
+   "detected": true,
+   "clip_confidence": 0.995
+  },
+  {
+   "tray": 6,
+   "state": 2,
+   "food_id": 10,
+   "name_tr": "Fasulye",
+   "gt_ratio": 1.0,
+   "pred_ratio": 0.922,
+   "abs_err": 0.078,
+   "detected": true,
+   "clip_confidence": 0.976
+  },
+  {
+   "tray": 6,
+   "state": 2,
+   "food_id": 12,
+   "name_tr": "Salata",
+   "gt_ratio": 1.0,
+   "pred_ratio": 0.959,
+   "abs_err": 0.041,
+   "detected": true,
+   "clip_confidence": 0.8
+  }
+ ]
+}

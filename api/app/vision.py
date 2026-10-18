@@ -16,6 +16,8 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps
 
+from .vlm import DISTRACTOR_LABEL, EvrenVLM
+
 SAM_URL = "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth"
 _CHECKPOINT_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..", "checkpoints", "sam_vit_b_01ec64.pth")
@@ -27,6 +29,9 @@ MIN_AREA_FRAC = 0.004
 MAX_AREA_FRAC = 0.45
 MIN_CLIP_PROB = 0.25
 DISTRACTOR_MARGIN = 0.05
+# CLIP belirsizlik bölgesi: VLM arabuluculuğuna (EVREN) gönderilecek maskeler
+VLM_REJECT_PROB = 0.10
+VLM_CLEAR_MARGIN = 0.25
 RATIO_CLAMP = 1.2
 POINTS_PER_SIDE = int(os.environ.get("ARTIK_SAM_POINTS", "24"))
 
@@ -109,6 +114,8 @@ class TrayAnalyzer:
         self.clip = CLIPModel.from_pretrained(CLIP_MODEL_ID).to(self.device)
         self.clip.eval()
         self.clip_processor = CLIPProcessor.from_pretrained(CLIP_MODEL_ID)
+        # EVREN VLM arabulucu (anahtar yoksa devre dışı; CLIP tek başına çalışır)
+        self.vlm = EvrenVLM()
 
     # ------------------------------------------------------------------ SAM
 
@@ -168,6 +175,7 @@ class TrayAnalyzer:
 
         n_menu = len(menu)
         results: list[dict | None] = []
+        ambiguous: list[int] = []
         for i, m in enumerate(masks):
             row_masked = probs[2 * i]
             row_bbox = probs[2 * i + 1]
@@ -179,8 +187,23 @@ class TrayAnalyzer:
             if p > MIN_CLIP_PROB and p - best_dist > DISTRACTOR_MARGIN:
                 it = menu[best_menu]
                 results.append({"key": it["key"], "name_tr": it["name_tr"], "score": p})
+            elif p < VLM_REJECT_PROB or (best_dist - p) > VLM_CLEAR_MARGIN:
+                results.append(None)  # belirgin şekilde menü dışı — VLM'e gerek yok
             else:
-                results.append(None)
+                results.append(None)  # aşağıda VLM arabuluculuğu doldurur
+                ambiguous.append(i)
+
+        # --- EVREN VLM arabuluculuğu: CLIP'in belirsiz kaldığı maskeler ---
+        if ambiguous and self.vlm.enabled:
+            crops = [self._bbox_crop(image, masks[i]) for i in ambiguous]
+            menu_labels = [it["name_tr"] for it in menu]
+            labels = self.vlm.classify_crops(crops, menu_labels)
+            if labels is not None:
+                for idx, label in zip(ambiguous, labels):
+                    res = self.vlm.label_to_menu_key(label, menu)
+                    if res is not None and res["key"] != DISTRACTOR_LABEL:
+                        results[idx] = res
+            # labels None (ağ hatası) → CLIP kararı (reddet) geçerli kalır
         return results
 
     @staticmethod

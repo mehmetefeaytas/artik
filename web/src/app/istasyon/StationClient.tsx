@@ -9,7 +9,7 @@ import {
   type AnalyzeResult,
   type MenuItem,
 } from "@/lib/api";
-import { DEMO_MENU_KEYS, DEMO_OVERLAYS, DEMO_RESULT } from "@/lib/demoResult";
+import { DEMO_MENU, DEMO_MENU_KEYS, DEMO_OVERLAYS, DEMO_PHOTOS, DEMO_RESULT } from "@/lib/demoResult";
 import { Stamp } from "@/components/Badges";
 
 type SlotKey = "before" | "after";
@@ -53,7 +53,18 @@ export default function StationClient() {
     );
   };
 
-  const quickDemo = () => setSelected(DEMO_MENU_KEYS);
+  const injectDemoMenu = () => {
+    setMenu((prev) => {
+      const keys = new Set(prev.map((m) => m.key));
+      const extras = DEMO_MENU.filter((m) => !keys.has(m.key));
+      return [...extras, ...prev];
+    });
+  };
+
+  const quickDemo = () => {
+    injectDemoMenu();
+    setSelected(DEMO_MENU_KEYS);
+  };
 
   const useDemoPair = async () => {
     const load = async (path: string) => {
@@ -61,11 +72,12 @@ export default function StationClient() {
       return res.blob();
     };
     try {
-      const [b, a] = await Promise.all([load(DEMO_OVERLAYS.before), load(DEMO_OVERLAYS.after)]);
+      const [b, a] = await Promise.all([load(DEMO_PHOTOS.before), load(DEMO_PHOTOS.after)]);
       setSlots({
-        before: { blob: b, url: DEMO_OVERLAYS.before },
-        after: { blob: a, url: DEMO_OVERLAYS.after },
+        before: { blob: b, url: DEMO_PHOTOS.before },
+        after: { blob: a, url: DEMO_PHOTOS.after },
       });
+      injectDemoMenu();
       setSelected(DEMO_MENU_KEYS);
     } catch {
       setError(t.common.error);
@@ -182,12 +194,15 @@ export default function StationClient() {
             onClear={() => setSlots((s) => ({ ...s, after: null }))}
           />
         </div>
-        <button
-          onClick={useDemoPair}
-          className="mt-4 rounded-lg border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink/70 transition-colors hover:border-ink/35 hover:text-ink"
-        >
-          {t.station.useDemoPair}
-        </button>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button
+            onClick={useDemoPair}
+            className="rounded-lg border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink/70 transition-colors hover:border-ink/35 hover:text-ink"
+          >
+            {t.station.useDemoPair}
+          </button>
+          <span className="font-mono text-[11px] text-ink/45">{t.station.demoPairNote}</span>
+        </div>
       </section>
 
       {/* 3 · Analiz */}

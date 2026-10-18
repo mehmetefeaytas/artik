@@ -31,21 +31,27 @@
 ## Mimari
 
 ```
-┌────────────────────────────┐        ┌─────────────────────────────────┐
-│ web/  Next.js 16 (Vercel)  │        │ api/  FastAPI (HF Space Docker) │
-│                            │        │                                 │
-│  /istasyon ──analyze──────▶│───────▶│  SAM ViT-B (MIT)  segmentasyon  │
-│  /panel    ◀──stats────────│        │  CLIP ViT-B/32 (MIT) zero-shot  │
-│  /geri-bildirim ─feedback─▶│        │  SQLite  vizyon kayıtları       │
-│  /yontem                   │        │  senaryo tohumu  data/scenario  │
-└────────────────────────────┘        └─────────────────────────────────┘
+┌────────────────────────────┐        ┌──────────────────────────────────────┐
+│ web/  Next.js 16 (Pages)   │        │ api/  FastAPI                        │
+│                            │        │                                      │
+│  /istasyon ──analyze──────▶│───────▶│  SAM ViT-B (MIT)       segmentasyon  │
+│  /panel    ◀──stats────────│        │  CLIP ViT-B/32 (MIT)   sınıflandırma │
+│  /geri-bildirim ─feedback─▶│        │  EVREN VLM (qwen3-vl)  arabuluculuk  │
+│  /yontem                   │        │  SQLite                vizyon kayıt │
+└────────────────────────────┘        │  senaryo tohumu        data/scenario│
+                                      └──────────────────────────────────────┘
 ```
 
 - **Zero-shot tercih sebebi**: Menü etiketleri istekle geçtiği için model
-  eğitimi gerekmez ve her yemekhane menüsüne uyarlanır. Alternatif olarak
-  UNIMIB2016 üzerinde fine-tune değerlendirildi (bkz. `docs/PDR.md`) ama Türk
-  menülerine genelleşmezdi.
+  eğitimi gerekmez ve her yemekhane menüsüne uyarlanır.
+- **Hibrit sınıflandırma**: CLIP ilk geçiş; belirsiz maskelerde (tabak+yemek
+  birleşik vb.) Türkiye'nin ulusal LLM altyapısı EVREN'deki görsel modele
+  (qwen3-vl-30b, Apache-2.0) tek çağrıyla sorulur. EVREN erişilemezse pipeline
+  saf CLIP ile çalışmaya devam eder.
 - **Lisans temizliği**: AGPL'li Ultralytics bilinçli olarak kullanılmadı.
+- **Gerçek veri setiyle doğrulama**: UNIMIB/Padova üniversite yemekhanesi
+  tepsileri (8 tepsi × 24 önce/sonra çifti, ground-truth maskeli) —
+  `demo/real_dataset` + `api/scripts/validate_real.py`. Sonuçlar model kartında.
 
 ## Hızlı başlangıç (yerel)
 
